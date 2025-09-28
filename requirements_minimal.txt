@@ -1,0 +1,10 @@
+# Core - Essential packages only
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pyyaml==6.0.1
+aiofiles==23.2.1
+
+# Optional - Add these later if needed
+# llama-cpp-python==0.2.20
+# pyttsx3==2.90
+# SpeechRecognition==3.10.0

@@ -1,0 +1,45 @@
+"""
+Alert rules for LEONA monitoring
+"""
+
+ALERT_RULES = """
+groups:
+  - name: leona_alerts
+    interval: 30s
+    rules:
+      - alert: HighResponseTime
+        expr: leona_response_duration_seconds{quantile="0.99"} > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time detected"
+          description: "99th percentile response time is above 2 seconds"
+      
+      - alert: HighMemoryUsage
+        expr: leona_memory_usage_bytes / (1024 * 1024 * 1024) > 8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "LEONA is using more than 8GB of RAM"
+      
+      - alert: HighErrorRate
+        expr: rate(leona_errors_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High error rate"
+          description: "Error rate is above 5%"
+      
+      - alert: ModelInferenceSlow
+        expr: leona_model_inference_seconds{quantile="0.99"} > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow model inference"
+          description: "Model inference is taking longer than 5 seconds"
+"""

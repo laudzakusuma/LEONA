@@ -1,0 +1,63 @@
+# ################ #
+# Python           #
+# ################ #
+
+# Virtual Environments
+# Hindari mengunggah folder virtual environment yang berisi library pihak ketiga.
+# Setiap developer harus membuat environment-nya sendiri dari requirements.txt.
+venv/
+venv310/
+venv311/
+env/
+.env
+.*-env/
+
+# Python cache files
+# File-file ini dibuat secara otomatis oleh Python dan tidak diperlukan di source control.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ################ #
+# Proyek LEONA     #
+# ################ #
+
+# Data & Database
+# File database sering berubah dan dapat menjadi besar.
+# Lebih baik untuk hanya menyimpan skema atau migrasi.
+/data/memory/*.db
+
+# Model AI
+# Model machine learning biasanya sangat besar dan harus diunduh secara terpisah.
+# Mengabaikan semua isi folder models, kecuali file .gitkeep jika ada.
+/data/models/*
+!/data/models/.gitkeep
+
+# Logs
+# File log dibuat saat runtime dan tidak boleh dimasukkan ke dalam version control.
+/logs/
+*.log
+
+# File Konfigurasi Lokal
+# Jangan pernah memasukkan file konfigurasi yang berisi kunci API atau data sensitif.
+# Sebagai gantinya, buat file contoh seperti 'config.example.yaml'.
+leona_config.yaml
+leona_config.json
+config.yaml
+
+# ################ #
+# IDE & Editor     #
+# ################ #
+
+# Visual Studio Code
+# Folder ini berisi pengaturan workspace lokal dan tidak relevan untuk developer lain.
+.vscode/
+
+# ################ #
+# Umum              #
+# ################ #
+
+# File sistem operasi
+.DS_Store
+Thumbs.db

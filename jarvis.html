@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEONA - JARVIS Mode</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: #000;
+            color: #00d4ff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .bg-circuit {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, #00d4ff 2px, #00d4ff 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, #00d4ff 2px, #00d4ff 4px);
+            background-size: 100px 100px;
+            animation: circuit-move 20s linear infinite;
+        }
+        
+        @keyframes circuit-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+        
+        .jarvis-container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .arc-reactor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+        }
+        
+        .reactor-core {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid #00d4ff;
+            border-radius: 50%;
+            animation: rotate 4s linear infinite;
+            box-shadow: 0 0 50px #00d4ff, inset 0 0 50px #00d4ff;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .jarvis-title {
+            position: absolute;
+            top: 50px;
+            text-align: center;
+            width: 100%;
+            z-index: 20;
+        }
+        
+        .jarvis-title h1 {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 10px;
+            text-shadow: 0 0 20px #00d4ff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00d4ff; }
+            to { text-shadow: 0 0 30px #00d4ff, 0 0 40px #00d4ff; }
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            letter-spacing: 5px;
+            margin-top: 10px;
+            opacity: 0.7;
+        }
+        
+        .status-panel {
+            position: absolute;
+            left: 50px;
+            top: 150px;
+            width: 300px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid #00d4ff;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            border-left: 3px solid #00d4ff;
+            background: linear-gradient(to right, rgba(0,212,255,0.1), transparent);
+        }
+        
+        .chat-interface {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            z-index: 20;
+        }
+        
+        .chat-display {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            padding: 20px;
+            margin-bottom: 20px;
+            min-height: 120px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        #user-input {
+            flex: 1;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            padding: 15px;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+            outline: none;
+            border-radius: 5px;
+        }
+        
+        #user-input:focus {
+            background: rgba(0, 212, 255, 0.2);
+            box-shadow: 0 0 20px #00d4ff;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border: none;
+            color: #000;
+            padding: 15px 30px;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,212,255,0.5);
+        }
+        
+        #voice-btn {
+            background: linear-gradient(135deg, #ff0040, #cc0033);
+            color: #fff;
+        }
+        
+        #voice-btn.recording {
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px #ff0040; }
+            50% { box-shadow: 0 0 40px #ff0040; }
+        }
+        
+        .voice-visualizer {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 5px;
+            z-index: 20;
+        }
+        
+        .voice-visualizer.active {
+            display: flex;
+        }
+        
+        .voice-bar {
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(to top, #00d4ff, #00ff88);
+            animation: voice-wave 0.5s ease-in-out infinite;
+        }
+        
+        .voice-bar:nth-child(2) { animation-delay: 0.1s; }
+        .voice-bar:nth-child(3) { animation-delay: 0.2s; }
+        .voice-bar:nth-child(4) { animation-delay: 0.3s; }
+        .voice-bar:nth-child(5) { animation-delay: 0.4s; }
+        
+        @keyframes voice-wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-circuit"></div>
+    
+    <div class="jarvis-container">
+        <div class="jarvis-title">
+            <h1>L.E.O.N.A</h1>
+            <div class="subtitle">LAUDZA'S EXECUTIVE OPERATIONAL NEURAL ASSISTANT</div>
+        </div>
+        
+        <div class="arc-reactor">
+            <div class="reactor-core"></div>
+        </div>
+        
+        <div class="status-panel">
+            <h3 style="margin-bottom: 20px; text-align: center;">SYSTEM STATUS</h3>
+            <div class="status-item">
+                <span>AI CORE</span>
+                <span style="color: #00ff88" id="ai-status">ONLINE</span>
+            </div>
+            <div class="status-item">
+                <span>VOICE</span>
+                <span style="color: #00ff88">ACTIVE</span>
+            </div>
+            <div class="status-item">
+                <span>CPU</span>
+                <span id="cpu">12%</span>
+            </div>
+            <div class="status-item">
+                <span>MEMORY</span>
+                <span id="memory">2.4GB</span>
+            </div>
+            <div class="status-item">
+                <span>TIME</span>
+                <span id="current-time">00:00:00</span>
+            </div>
+        </div>
+        
+        <div class="voice-visualizer" id="voice-viz">
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+            <div class="voice-bar"></div>
+        </div>
+        
+        <div class="chat-interface">
+            <div class="chat-display">
+                <div id="response-text">Hello Sir. LEONA at your service. All systems operational.</div>
+            </div>
+            <div class="input-container">
+                <input type="text" id="user-input" placeholder="Enter command or speak..." />
+                <button class="btn" onclick="sendMessage()">EXECUTE</button>
+                <button class="btn" id="voice-btn" onclick="toggleVoice()">🎤 VOICE</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {hour12: false});
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Update stats
+        setInterval(() => {
+            document.getElementById('cpu').textContent = Math.floor(Math.random() * 30 + 10) + '%';
+            document.getElementById('memory').textContent = (Math.random() * 2 + 1.5).toFixed(1) + 'GB';
+        }, 5000);
+        
+        // Voice synthesis
+        const synth = window.speechSynthesis;
+        
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            synth.speak(utterance);
+        }
+        
+        // Voice recognition
+        let recognition;
+        let isListening = false;
+        
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'en-US';
+            
+            recognition.onstart = () => {
+                isListening = true;
+                document.getElementById('voice-btn').classList.add('recording');
+                document.getElementById('voice-viz').classList.add('active');
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('user-input').value = transcript;
+                sendMessage();
+            };
+            
+            recognition.onend = () => {
+                isListening = false;
+                document.getElementById('voice-btn').classList.remove('recording');
+                document.getElementById('voice-viz').classList.remove('active');
+            };
+        }
+        
+        function toggleVoice() {
+            if (!recognition) {
+                alert('Speech recognition not supported');
+                return;
+            }
+            
+            if (isListening) {
+                recognition.stop();
+            } else {
+                recognition.start();
+            }
+        }
+        
+        // Send message
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            document.getElementById('response-text').innerHTML = '⚡ Processing...';
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: message})
+                });
+                
+                const data = await response.json();
+                document.getElementById('response-text').innerHTML = data.response;
+                
+                // Speak response
+                speak(data.response);
+                
+            } catch (error) {
+                document.getElementById('response-text').innerHTML = 'Connection error. Please check backend.';
+            }
+            
+            input.value = '';
+        }
+        
+        // Keyboard shortcut
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // Check backend status
+        async function checkBackend() {
+            try {
+                const response = await fetch('/api/system/status');
+                const data = await response.json();
+                
+                if (data.ai && data.ai.model_loaded) {
+                    document.getElementById('ai-status').textContent = 'ONLINE';
+                    document.getElementById('ai-status').style.color = '#00ff88';
+                } else {
+                    document.getElementById('ai-status').textContent = 'STANDBY';
+                    document.getElementById('ai-status').style.color = '#ffaa00';
+                }
+            } catch (error) {
+                document.getElementById('ai-status').textContent = 'OFFLINE';
+                document.getElementById('ai-status').style.color = '#ff0040';
+            }
+        }
+        
+        setInterval(checkBackend, 10000);
+        checkBackend();
+        
+        // Startup greeting
+        setTimeout(() => {
+            speak('LEONA online. All systems operational.');
+        }, 1000);
+    </script>
+</body>
+</html>
